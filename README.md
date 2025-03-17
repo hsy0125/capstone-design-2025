@@ -25,3 +25,4 @@
 
 #### 기존 기술과 비교
 
+<img width="488" alt="Image" src="https://github.com/user-attachments/assets/ab726935-79a1-45dc-9339-be250a6a36d4" />
