@@ -27,7 +27,10 @@
 #### 기존 기술과 비교
 
 <img width="488" alt="Image" src="https://github.com/user-attachments/assets/ab726935-79a1-45dc-9339-be250a6a36d4" />
-<<<<<<< HEAD
-=======
- f6ddeb20dfa314a4274275cac98d9318e3e2543c
->>>>>>> 369503edc14fb402c46fadfcbd172d32ff3f5c92
+
+현재 진행상황 
+2025.5.19
+✅ 데이터베이스 구현
+✅ gpt api 연동
+✅ google speach-to-speach 연동
+
