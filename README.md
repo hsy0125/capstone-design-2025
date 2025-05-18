@@ -28,9 +28,12 @@
 
 <img width="488" alt="Image" src="https://github.com/user-attachments/assets/ab726935-79a1-45dc-9339-be250a6a36d4" />
 
-현재 진행상황 
-2025.5.19
-✅ 데이터베이스 구현
-✅ gpt api 연동
-✅ google speach-to-speach 연동
+#### 현재 진행상황 
+- 2025.5.19
+  
+✅ 데이터베이스 구현.
+
+✅ gpt api 연동.
+
+✅ google speach-to-speach 연동.
 
