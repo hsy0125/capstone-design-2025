@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_connection():
+    print("🔐 DB 연결 정보 확인")
+    print("🔐 DB_HOST:", os.getenv("DB_HOST"))
+    print("🔐 DB_PORT:", os.getenv("DB_PORT"))
+    print("🔐 DB_USER:", os.getenv("DB_USER"))
+    print("🔐 DB_PASSWORD:", os.getenv("DB_PASSWORD"))
+    print("🔐 DB_NAME:", os.getenv("DB_NAME"))
+
     return psycopg2.connect(
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT"),
@@ -12,28 +19,55 @@ def get_connection():
         password=os.getenv("DB_PASSWORD"),
         dbname=os.getenv("DB_NAME")
     )
-
 def find_answer(question, car_model):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT answer FROM chat_log WHERE question = %s AND car_model = %s",
-        (question, car_model)
-    )
+
+    # 1. warning_lights 테이블에서 검색
+    cursor.execute("""
+        SELECT solution FROM warning_lights
+        WHERE warning_name ILIKE %s OR warning_desc ILIKE %s
+        LIMIT 1
+    """, (f"%{question}%", f"%{question}%"))
+    result = cursor.fetchone()
+    if result:
+        conn.close()
+        return result[0], "warning_lights"
+
+    # 2. solution 테이블에서 검색
+    cursor.execute("""
+        SELECT answer FROM solution
+        WHERE question = %s AND car_model = %s
+        LIMIT 1
+    """, (question, car_model))
     result = cursor.fetchone()
     conn.close()
-    return result[0] if result else None
+    if result:
+        return result[0], "solution"
+
+    # 3. 없으면 GPT로 넘어감
+    return None, None
 
 def save_answer(question, answer, car_model):
     conn = get_connection()
     cursor = conn.cursor()
+
+    # chat_log 저장 (개발자용 로그 기록)
     cursor.execute(
         "INSERT INTO chat_log (question, answer, car_model) VALUES (%s, %s, %s)",
         (question, answer, car_model)
     )
+
+    # solution 저장 (실제 답변 저장소)
+    # → car_model이 없을 수도 있으므로 NULL 허용되게 테이블 생성 필요
+    cursor.execute(
+        "INSERT INTO solution (question, answer, car_model) VALUES (%s, %s, %s)",
+        (question, answer, car_model)
+    )
+
     conn.commit()
     conn.close()
-    ## db 검색 기반 추가 코드
+
 def search_all_tables(keyword):
     conn = get_connection()
     cursor = conn.cursor()

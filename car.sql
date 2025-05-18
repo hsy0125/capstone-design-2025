@@ -23,7 +23,7 @@ CREATE TABLE warning_lights (
     solution TEXT
 );
 
-DROP TABLE IF EXISTS emergency_tips CASCADE;   -- 비상상황 응급조치
+DROP TABLE IF EXISTS em ergency_tips CASCADE;   -- 비상상황 응급조치
 CREATE TABLE emergency_tips (
     tip_id SERIAL PRIMARY KEY,
     vehicle_id INT REFERENCES vehicles(vehicle_id),
@@ -249,3 +249,39 @@ VALUES(1, '엔진오일', '교체', 15000, 12, '가혹조건: 7500km or 6개월,
       (1, '타이어 마모', '점검', 50000, NULL, '트레드 마모선 기준, 편마모 확인'),
       (1, '퓨즈', '교체', NULL, NULL, '이상 발생 시 교체'),
       (1, '전구', '교체', NULL, NULL, '불량 시 동일 규격으로 교체');
+
+select *
+from emergency_steps;
+
+CREATE TABLE chat_log (
+                          id SERIAL PRIMARY KEY,
+                          question TEXT NOT NULL,
+                          answer TEXT NOT NULL,
+                          car_model VARCHAR(50),
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE solution (
+                          id SERIAL PRIMARY KEY,
+                          question TEXT NOT NULL,
+                          answer TEXT NOT NULL,
+                          car_model TEXT NOT NULL,
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+drop table solution;
+
+CREATE TABLE solution (
+                          id SERIAL PRIMARY KEY,
+                          question TEXT NOT NULL,
+                          answer TEXT NOT NULL,
+                          car_model TEXT NOT NULL,
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+select *
+from solution;
+
+delete
+from solution
+WHERE id = 5;
