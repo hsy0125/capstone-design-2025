@@ -6,11 +6,11 @@ import wave
 from db import save_answer  # DB 저장 함수만 사용
 
 load_dotenv()
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")  #구글api 호출 인증
 
-def record_audio(filename="temp.wav", seconds=5):
+def record_audio(filename="temp.wav", seconds=5):  #5초동안 음성받아 저장
     RATE = 16000
-    CHUNK = 1024
+    CHUNK = 1024                                    #16000Hz, 16bit, mono 채널 구성 (Google STT 기본 권장 설정)
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
 
