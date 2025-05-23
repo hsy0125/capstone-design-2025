@@ -5,20 +5,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_connection():
-    print("🔐 DB 연결 정보 확인")
-    print("🔐 DB_HOST:", os.getenv("DB_HOST"))
-    print("🔐 DB_PORT:", os.getenv("DB_PORT"))
-    print("🔐 DB_USER:", os.getenv("DB_USER"))
-    print("🔐 DB_PASSWORD:", os.getenv("DB_PASSWORD"))
-    print("🔐 DB_NAME:", os.getenv("DB_NAME"))
-
-    return psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        dbname=os.getenv("DB_NAME")
-    )
+    try:
+        return psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            dbname=os.getenv("DB_NAME")
+        )
+    except Exception as e:
+        print("🔐 DB 연결 정보 확인 실패:")
+        print("🔐 DB_HOST:", os.getenv("DB_HOST"))
+        print("🔐 DB_PORT:", os.getenv("DB_PORT"))
+        print("🔐 DB_USER:", os.getenv("DB_USER"))
+        print("🔐 DB_PASSWORD:", os.getenv("DB_PASSWORD"))
+        print("🔐 DB_NAME:", os.getenv("DB_NAME"))
+        raise e
+    
 def find_answer(question, car_model):
     conn = get_connection()
     cursor = conn.cursor()
