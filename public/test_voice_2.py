@@ -8,7 +8,23 @@ import openai
 from gtts import gTTS
 from playsound import playsound
 import re
+from gtts import gTTS
+from pydub import AudioSegment
+from pydub.playback import play
+## tts 속도 조절
+def change_speed(sound, speed=2.0):
+    return sound._spawn(sound.raw_data, overrides={
+        "frame_rate": int(sound.frame_rate * speed)
+    }).set_frame_rate(sound.frame_rate)
 
+def speak_text(text):
+    tts = gTTS(text=text, lang='ko')
+    tts.save("response.mp3")
+
+    sound = AudioSegment.from_file("response.mp3", format="mp3")
+    faster_sound = change_speed(sound, speed=1.3)  # 1.3배속 재생
+    play(faster_sound)
+    
 load_dotenv()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 openai.api_key = os.getenv("OPENAI_API_KEY")
