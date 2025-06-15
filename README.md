@@ -37,3 +37,7 @@
 
 ✅ google speach-to-speach 연동.
 
+
+## 역할분담
+
+https://www.notion.so/21153f0802d680e79205f131cd61e43f?v=21153f0802d68075871c000cde728695&source=copy_link
