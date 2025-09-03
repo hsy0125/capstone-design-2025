@@ -45,3 +45,6 @@
 공해성 (팀원)
 
 https://www.notion.so/21153f0802d680e79205f131cd61e43f?v=21153f0802d68075871c000cde728695&source=copy_link
+
+## Frontend
+[capstone-design-2025-frontend](https://github.com/Hyun262/capstone-design-2025-frontend)
