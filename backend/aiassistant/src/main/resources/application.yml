@@ -1,0 +1,6 @@
+shop:
+  baseUrl: https://www.example.com/search?q=
+co2:
+  thresholds:
+    normal: 800
+    warning: 1200
