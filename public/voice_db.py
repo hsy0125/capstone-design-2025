@@ -68,9 +68,18 @@ def find_voice_answer(question):
 def save_voice_answer(question, answer, car_model):
     conn = get_connection()
     cursor = conn.cursor()
+
+    # 1. chat_log 테이블에 저장
     cursor.execute(
         "INSERT INTO chat_log (question, answer, car_model) VALUES (%s, %s, %s)",
         (question, answer, car_model)
     )
+
+    # 2. solution 테이블에도 저장 (필요하다면)
+    cursor.execute(
+        "INSERT INTO solution (question, answer, car_model) VALUES (%s, %s, %s)",
+        (question, answer, car_model)
+    )
+
     conn.commit()
     conn.close()
