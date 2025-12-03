@@ -882,27 +882,76 @@ def stt_from_bytes(raw: bytes, content_type: str = "", language="ko-KR"):
 # ============================================================
 #  차량용품 키워드 감지
 # ============================================================
+
 def detect_accessory_keyword(text: str):
+    text_low = text.lower()
+    
     kw_map = {
-        "타이어": ["타이어", "스노우타이어", "공기압"],
-        "엔진오일": ["엔진오일"],
-        "와이퍼": ["와이퍼"],
-        "배터리": ["배터리"],
-        "블랙박스": ["블랙박스"],
-        "네비게이션": ["네비"],
-        "에어필터": ["에어필터", "캐빈필터"],
-        "체인": ["체인"],
-        "세차용품": ["세차"],
-        "방향제": ["방향제"],
-        "충전기": ["충전기"],
+        "엔진오일": ["엔진오일", "오일", "오일갈아", "오일 교체", "오일 교환", "오일필터", "오일 필터", "윤활유"],
+        "에어필터": ["에어필터", "캐빈필터", "공기필터", "에어컨필터", "공조필터"],
+        "브레이크패드": ["브레이크패드", "패드", "브레이크 패드", "끼익", "브레이크 소리", "덜덜"],
+        "브레이크액": ["브레이크액", "브레이크 오일", "dot3", "dot4"],
+        "냉각수": ["냉각수", "부동액", "쿨런트", "라디에이터", "과열"],
+        "배터리": ["배터리", "방전", "축전지", "시동 안걸림"],
+        "타이어": ["타이어", "스노우타이어", "사계절 타이어", "트레드", "공기압", "펑크", "휠"],
+        "와이퍼": ["와이퍼", "와이퍼 고무", "유리 닦는"],
+        "점화플러그": ["점화플러그", "스파크플러그", "시동불량"],
+        "연료첨가제": ["첨가제", "불스원샷", "인젝터 클리너"],
+        "OBD": ["obd", "스캐너", "코드리더기"],
+        "전조등": ["전조등", "라이트", "램프", "hid", "led"],
+        "실내등": ["실내등", "룸램프"],
+        "블랙박스": ["블랙박스", "블박", "대시캠", "대쉬캠"],
+        "퓨즈": ["퓨즈", "전기 안들어와", "전기 문제"],
+        "세차용품": ["세차", "왁스", "광택", "폼건", "카샴푸"],
+        "방향제": ["방향제", "탈취", "차 냄새"],
+        "충전기": ["충전기", "시거잭", "usb 충전"],
+        "체인": ["체인", "스노우체인"]
     }
-    lower = text.lower()
-    for k, arr in kw_map.items():
-        for a in arr:
-            if a in text or a.lower() in lower:
-                return k
+
+    for key, words in kw_map.items():
+        for w in words:
+            if w in text or w.lower() in text_low:
+                return key
     return None
 
+
+# def detect_accessory_keyword(text: str):
+#     kw_map = {
+#         "타이어": ["타이어", "스노우타이어", "공기압"],
+#         "엔진오일": ["엔진오일"],
+#         "와이퍼": ["와이퍼"],
+#         "배터리": ["배터리"],
+#         "블랙박스": ["블랙박스"],
+#         "네비게이션": ["네비"],
+#         "에어필터": ["에어필터", "캐빈필터"],
+#         "체인": ["체인"],
+#         "세차용품": ["세차"],
+#         "방향제": ["방향제"],
+#         "충전기": ["충전기"],
+#     }
+#     lower = text.lower()
+#     for k, arr in kw_map.items():
+#         for a in arr:
+#             if a in text or a.lower() in lower:
+#                 return k
+#     return None
+
+# ============================================================
+#  쇼핑 의도 감지 (recommend intent)
+# ============================================================
+def is_recommend_intent(text: str):
+    recommend_words = [
+        "추천", "추천해줘", "추천해 줘",
+        "사야", "사야돼", "사야 돼",
+        "사야할까", "사야 할까",
+        "사고싶", "사고 싶", 
+        "살까", "구매", "뭐 사",
+        "골라줘", "고르"
+    ]
+    for w in recommend_words:
+        if w in text:
+            return True
+    return False
 
 def build_naver_shopping_link(keyword, car):
     q = f"{car} {keyword}" if car else keyword
@@ -1006,7 +1055,7 @@ def ask_text(req: AskReq):
     question_raw = req.question
     question = question_raw.strip()
     no_space = question.replace(" ", "")
-    car = req.carModel or "DEFAULT"
+    car = req.carModel or "아반떼"
 
     # -----------------------------------------
     # 1) 알람 문장인지 검사 (음성 문제 해결)
@@ -1064,15 +1113,20 @@ def ask_text(req: AskReq):
     # 3) 차량용품 키워드
     # -----------------------------------------
     kw = detect_accessory_keyword(question)
-    if kw:
+    if kw and is_recommend_intent(question):
         link = build_naver_shopping_link(kw, car)
-        ans += f"\n\n🛒 관련 용품 링크: {link}"
+        ans = f"🛒 {kw} 추천 링크입니다:\n{link}"
 
-    # -----------------------------------------
     # 4) TTS 정제
-    # -----------------------------------------
-    tts_text = ans.split("🛒")[0]
+    tts_text = ans
+
+    # 쇼핑 아이콘은 제거
+    tts_text = tts_text.replace("🛒", "")
+
+    # URL 제거 (링크는 읽지 않도록)
     tts_text = re.sub(r"https?://\S+", "", tts_text)
+
+    # 이모지/기타 특수문자 제거
     tts_text = re.sub(r"[^\w\s가-힣.,!?]", "", tts_text).strip()
 
     audio_b64 = None
